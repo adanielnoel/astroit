@@ -84,10 +84,12 @@ window.handleSubmit = function(event) {
         });
     }
 
+    let mouseX = 0; // Initialize mouseX to track the X position of the mouse
     let mouseY = 0; // Initialize mouseY to track the Y position of the mouse
 
     function animateStars() {
-        const speedFactor = 1 - Math.abs((mouseY - window.innerHeight/2) / (window.innerHeight/2)); // Speed peaks at center
+        let mouseDistance = Math.sqrt((mouseX - starCanvas.width/2)**2 + (mouseY - starCanvas.height/2)**2);
+        const speedFactor = Math.max(0, 1 - Math.abs(mouseDistance / (window.innerWidth/2))); // Speed peaks at center
         stars.forEach(star => {
             // Calculate distance from center and direction
             let centerX = starCanvas.width / 2;
@@ -126,6 +128,7 @@ window.handleSubmit = function(event) {
 
     // Mouse movement effect
     document.addEventListener('mousemove', function (e) {
+        mouseX = e.clientX; // Update mouseX with the current X position of the mouse
         mouseY = e.clientY; // Update mouseY with the current Y position of the mouse
     });
 
