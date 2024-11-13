@@ -11,14 +11,19 @@ window.handleSubmit = function(event) {
     }
 
     // Option 1: Send to your backend API
-    fetch('YOUR_API_ENDPOINT', {
+    fetch('https://backend-760143753690.us-central1.run.app/signup', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: email })
+        body: ""
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         alert('Thank you for signing up!');
         document.getElementById('emailForm').reset();
@@ -37,7 +42,7 @@ window.handleSubmit = function(event) {
     document.body.appendChild(starCanvas);
     const ctx = starCanvas.getContext('2d');
     let stars = [];
-    const numStars = 100;
+    const numStars = 2000;
 
     function resizeCanvas() {
         starCanvas.width = window.innerWidth;
@@ -49,11 +54,17 @@ window.handleSubmit = function(event) {
     function createStars() {
         stars = [];
         for (let i = 0; i < numStars; i++) {
+            // Generate random angle and radius with decreasing density
+            let angle = Math.random() * Math.PI * 2;
+            let radius = Math.random() ** 2 * Math.max(starCanvas.width, starCanvas.height) / 5;
+
+            // Convert polar to cartesian coordinates
             stars.push({
-                x: Math.random() * starCanvas.width,
-                y: Math.random() * starCanvas.height,
-                radius: Math.random() * 2.5,
-                alpha: Math.random()
+                x: starCanvas.width/2 + radius * Math.cos(angle),
+                y: starCanvas.height/2 + radius * Math.sin(angle),
+                base_size: Math.random() * 5.5,
+                size: 0.0,
+                alpha: Math.random() * 0.5
             });
         }
     }
@@ -67,7 +78,7 @@ window.handleSubmit = function(event) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         stars.forEach(star => {
             ctx.beginPath();
-            ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
             ctx.fill();
         });
@@ -78,12 +89,31 @@ window.handleSubmit = function(event) {
     function animateStars() {
         const speedFactor = 1 - Math.abs((mouseY - window.innerHeight/2) / (window.innerHeight/2)); // Speed peaks at center
         stars.forEach(star => {
-            star.x += 0.3 * (star.alpha + 0.5) * (1 + 4 * speedFactor); // Adjust horizontal speed
-            star.y += 0.2 * (star.alpha + 0.5) * (1 + 4 * speedFactor); // Adjust vertical speed
-            if (star.x < 0) star.x = starCanvas.width;
-            if (star.x > starCanvas.width) star.x = 0;
-            if (star.y < 0) star.y = starCanvas.height;
-            if (star.y > starCanvas.height) star.y = 0;
+            // Calculate distance from center and direction
+            let centerX = starCanvas.width / 2;
+            let centerY = starCanvas.height / 2;
+            let dx = star.x - centerX;
+            let dy = star.y - centerY;
+
+            // Increase speed based on distance from center
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            let speed = (distance / 50000) * (1 + 2 * speedFactor);
+
+            // Update position
+            star.x += dx * speed;
+            star.y += dy * speed;
+
+            // Scale size based on distance from center (closer to edges = bigger)
+            let maxDistance = Math.sqrt((starCanvas.width/2)**2 + (starCanvas.height/2)**2);
+            star.size = star.base_size * (distance / maxDistance) * 2;
+
+            // Reset stars when they go off screen
+            if (star.x < 0 || star.x > starCanvas.width ||
+                star.y < 0 || star.y > starCanvas.height) {
+                star.x = centerX + (Math.random() - 0.5) * 100;
+                star.y = centerY + (Math.random() - 0.5) * 100;
+                star.size = 0;
+            }
         });
         drawStars();
         requestAnimationFrame(animateStars);
