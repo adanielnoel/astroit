@@ -56,7 +56,7 @@ window.handleSubmit = function(event) {
         for (let i = 0; i < numStars; i++) {
             // Generate random angle and radius with decreasing density
             let angle = Math.random() * Math.PI * 2;
-            let radius = Math.random() ** 2 * Math.max(starCanvas.width, starCanvas.height) / 5;
+            let radius = Math.random() ** 2 * Math.max(starCanvas.width, starCanvas.height) / 4;
 
             // Convert polar to cartesian coordinates
             stars.push({
