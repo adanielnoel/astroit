@@ -74,3 +74,29 @@ p {
     z-index: 0; /* Behind hero content */
     pointer-events: none; /* Allow clicks through to hero content */
 }
+
+.signup-message {
+    padding: 8px 16px;
+    margin-top: -1px; /* Connects with the form above */
+    border: 1px solid;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    font-size: 1rem;
+    text-align: center;
+    background-color: transparent;
+}
+
+.signup-message.success {
+    border-color: #4CAF50;
+    color: #2e7d32;
+}
+
+.signup-message.error {
+    border-color: #f44336;
+    color: #dc2626;
+}
+
+/* Assuming your form has these classes, add these to ensure proper connection */
+#emailForm {
+    margin-bottom: 0; /* Removes any gap between form and message */
+}

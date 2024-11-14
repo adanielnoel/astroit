@@ -1,4 +1,3 @@
-// Move handleSubmit outside of the IIFE to make it globally accessible
 window.handleSubmit = function(event) {
     event.preventDefault();
 
@@ -11,26 +10,48 @@ window.handleSubmit = function(event) {
     }
 
     // Option 1: Send to your backend API
-    fetch('https://backend-760143753690.us-central1.run.app/signup', {
+    fetch('https://astroit.io/signup', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json'
         },
-        body: ""
+        body: JSON.stringify({ email: email })
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.json();
+        return response.text();
     })
     .then(data => {
-        alert('Thank you for signing up!');
-        document.getElementById('emailForm').reset();
+        // Create and show success message
+        const successMessage = document.createElement('div');
+        successMessage.classList.add('signup-message', 'success');
+        successMessage.textContent = 'Thank you for signing up!';
+
+        // Insert after the form
+        const form = document.getElementById('emailForm');
+        form.parentNode.insertBefore(successMessage, form.nextSibling);
+
+        // Reset form
+        form.reset();
+
+        setTimeout(() => {
+            successMessage.remove();
+        }, 4000);
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('There was an error. Please try again.');
+        const errorMessage = document.createElement('div');
+        errorMessage.classList.add('signup-message', 'error');
+        errorMessage.textContent = 'There was an error. Please try again.';
+        // Insert after the form
+        const form = document.getElementById('emailForm');
+        form.parentNode.insertBefore(errorMessage, form.nextSibling);
+        setTimeout(() => {
+            errorMessage.remove();
+        }, 4000);
     });
 };
 
@@ -89,7 +110,7 @@ window.handleSubmit = function(event) {
 
     function animateStars() {
         let mouseDistance = Math.sqrt((mouseX - starCanvas.width/2)**2 + (mouseY - starCanvas.height/2)**2);
-        const speedFactor = Math.max(0, 1 - Math.abs(mouseDistance / (window.innerWidth/2))); // Speed peaks at center
+        const speedFactor = Math.max(0, 1 - Math.abs(mouseDistance / (window.innerHeight/2))); // Speed peaks at center
         stars.forEach(star => {
             // Calculate distance from center and direction
             let centerX = starCanvas.width / 2;
@@ -99,7 +120,7 @@ window.handleSubmit = function(event) {
 
             // Increase speed based on distance from center
             let distance = Math.sqrt(dx * dx + dy * dy);
-            let speed = (distance / 50000) * (1 + 2 * speedFactor);
+            let speed = (distance / 80000) * (1 + 2 * speedFactor);
 
             // Update position
             star.x += dx * speed;
@@ -121,7 +142,16 @@ window.handleSubmit = function(event) {
         requestAnimationFrame(animateStars);
     }
 
-    window.addEventListener('resize', resizeCanvas);
+    let previousWidth = window.innerWidth;
+
+    window.addEventListener('resize', () => {
+        const currentWidth = window.innerWidth;
+        if (currentWidth !== previousWidth) {
+            previousWidth = currentWidth;
+            resizeCanvas();
+        }
+    });
+
     resizeCanvas();
     createStars();
     animateStars();
