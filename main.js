@@ -120,7 +120,11 @@ window.handleSubmit = function(event) {
 
             // Increase speed based on distance from center
             let distance = Math.sqrt(dx * dx + dy * dy);
-            let speed = (distance / 80000) * (1 + 2 * speedFactor);
+
+            let speed = distance / 40000;
+            if (window.innerWidth > 768) {
+                speed *= (1 + speedFactor) * 0.8;
+            }
 
             // Update position
             star.x += dx * speed;
