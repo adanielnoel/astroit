@@ -10,7 +10,7 @@ window.handleSubmit = function(event) {
     }
 
     // Option 1: Send to your backend API
-    fetch('https://astroit.io/signup', {
+    fetch('https://backend-760143753690.us-central1.run.app/signup', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
